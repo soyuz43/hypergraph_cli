@@ -1,6 +1,6 @@
 from llm.ollama import run_ollama
 
-def entropic_equilibrium_analysis(proposition: str) -> str:
+def entropic_equilibrium_analysis(proposition: str, lens_context: str = "") -> str:
     prompt = f"""
 You are performing an Entropic Equilibrium Analysis.
 Determine:

@@ -54,9 +54,32 @@ ollama serve
 
 ### 5. Run the tool
 
+To run a basic analysis:
+
 ```bash
 python main.py "Consciousness is an irreducible phenomenon."
+````
+
+To apply specific epistemological lenses (e.g., Haraway and Barad):
+
+```bash
+python main.py "Consciousness is an irreducible phenomenon." -l haraway -l barad
 ```
+
+To output the results as a Markdown file:
+
+```bash
+python main.py "Consciousness is an irreducible phenomenon." --markdown
+```
+
+You can combine options:
+
+```bash
+python main.py "Consciousness is an irreducible phenomenon." -l haraway -l barad --markdown
+```
+
+The resulting file will be saved in the `output/` directory with an auto-incremented filename like `analysis_001.md`.
+
 
 ---
 

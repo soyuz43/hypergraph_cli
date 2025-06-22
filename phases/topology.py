@@ -1,6 +1,6 @@
 from llm.ollama import run_ollama
 
-def hypergraph_topology_mapping(proposition: str) -> str:
+def hypergraph_topology_mapping(proposition: str, lens_context: str = "") -> str:
     prompt = f"""
 You are performing a Hypergraph Topology Mapping.
 Analyze the following proposition by identifying:

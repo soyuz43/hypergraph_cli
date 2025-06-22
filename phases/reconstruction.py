@@ -1,6 +1,6 @@
 from llm.ollama import run_ollama
 
-def non_anthropic_reconstruction(proposition: str) -> str:
+def non_anthropic_reconstruction(proposition: str, lens_context: str = "") -> str:
     prompt = f"""
 You are performing a Non-Anthropic Reconstruction.
 Reframe the following proposition from an alien, post-human, or multispecies epistemology.
