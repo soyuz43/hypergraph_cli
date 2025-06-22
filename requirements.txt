@@ -1,0 +1,3 @@
+# Only needed if you later want to use a Python Ollama API or CLI tool enhancements
+ollama
+typer
