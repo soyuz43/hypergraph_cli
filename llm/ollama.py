@@ -1,6 +1,6 @@
 import ollama
 
-OLLAMA_MODEL = "qwen2.5-coder:14b-instruct-q5_K_M"
+OLLAMA_MODEL = "qwen2.5-coder:3b-instruct-q8_0"
 
 def run_ollama(prompt: str) -> str:
     try:

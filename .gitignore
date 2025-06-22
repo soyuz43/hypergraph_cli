@@ -1,2 +1,4 @@
 # .gitignore
 hgcli-env/
+# Ignore generated analysis outputs
+output/
