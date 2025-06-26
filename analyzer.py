@@ -1,6 +1,7 @@
 from phases.topology import hypergraph_topology_mapping
 from phases.equilibrium import entropic_equilibrium_analysis
 from phases.reconstruction import non_anthropic_reconstruction
+from phases.stability import analyze_stability
 
 # Define available lenses here
 EPISTEMOLOGICAL_LENSES = {
@@ -23,8 +24,9 @@ def analyze_proposition(proposition: str, lenses: list[str] = None) -> dict:
     htm = hypergraph_topology_mapping(proposition, lens_context)
     eee = entropic_equilibrium_analysis(proposition, lens_context)
     nar = non_anthropic_reconstruction(proposition, lens_context)
+    stability = analyze_stability(proposition)
 
-    final_output = synthesize_output(htm, eee, nar)
+    final_output = synthesize_output(htm, eee, nar, stability)
 
     return {
         "original": proposition,
@@ -34,12 +36,14 @@ def analyze_proposition(proposition: str, lenses: list[str] = None) -> dict:
             "Hypergraph Topology Mapping": htm,
             "Entropic Equilibrium Analysis": eee,
             "Non-Anthropic Reconstruction": nar
-        }
+        },
+        "stability": stability
     }
 
-def synthesize_output(htm: str, eee: str, nar: str) -> str:
+def synthesize_output(htm: str, eee: str, nar: str, stability: str) -> str:
     return (
         f"--- Topology ---\n{htm.strip()}\n\n"
         f"--- Equilibrium ---\n{eee.strip()}\n\n"
-        f"--- Non-Anthropic Perspective ---\n{nar.strip()}"
+        f"--- Non-Anthropic Perspective ---\n{nar.strip()}\n\n"
+        f"--- Mathematical Stability ---\n{stability.strip()}"
     )
