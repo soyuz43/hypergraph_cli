@@ -48,7 +48,7 @@ pip install -r requirements.txt
 Install the model if you haven’t yet:
 
 ```bash
-ollama pull qwen2.5-coder:14b-instruct-q5_K_M
+ollama pull qwen2.5-coder:7b-instruct-q5_K_M
 ollama serve
 ```
 
