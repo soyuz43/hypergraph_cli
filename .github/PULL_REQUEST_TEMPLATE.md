@@ -25,4 +25,4 @@ Include CLI outputs, screenshots, or graphs if relevant to the change.
 Propose future directions, enhancements, or related modules to consider.
 
 ---
-*Generated using the Gödel & Dirac framework for epistemically structured code review.*
+
