@@ -59,6 +59,7 @@ def main(
             f"## Hypergraph Topology Mapping\n{result['meta_analysis']['Hypergraph Topology Mapping']}\n\n"
             f"## Entropic Equilibrium Analysis\n{result['meta_analysis']['Entropic Equilibrium Analysis']}\n\n"
             f"## Non-Anthropic Reconstruction\n{result['meta_analysis']['Non-Anthropic Reconstruction']}\n\n"
+            f"## Mathematical Stability Analysis\n{result['stability']}\n\n"
             f"## Synthesized Output\n{result['output']}\n"
         )
     else:
@@ -68,6 +69,7 @@ def main(
             f"Hypergraph Topology Mapping:\n{result['meta_analysis']['Hypergraph Topology Mapping']}\n\n"
             f"Entropic Equilibrium Analysis:\n{result['meta_analysis']['Entropic Equilibrium Analysis']}\n\n"
             f"Non-Anthropic Reconstruction:\n{result['meta_analysis']['Non-Anthropic Reconstruction']}\n\n"
+            f"Mathematical Stability Analysis:\n{result['stability']}\n\n"
             f"Synthesized Output:\n{result['output']}\n"
         )
 
