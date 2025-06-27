@@ -5,3 +5,4 @@ networkx
 spacy
 transformers
 torch
+scikit-learn
