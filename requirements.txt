@@ -2,3 +2,6 @@ ollama
 typer
 numpy
 networkx
+spacy
+transformers
+torch
