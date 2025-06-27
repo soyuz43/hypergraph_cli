@@ -1,10 +1,11 @@
-# phases\stability.py
+# phases/stability.py
 
 import networkx as nx
 import numpy as np
 import spacy
 from transformers import AutoTokenizer, AutoModel
 import torch
+from phases.mahalanobis import train_mahalanobis_model, compute_mahalanobis_distance
 
 # Load spaCy for parsing
 nlp = spacy.load("en_core_web_sm")
@@ -102,11 +103,17 @@ def analyze_stability(proposition: str) -> str:
     ]
     avg_similarity = float(np.mean(similarities))
 
+    # Compute Mahalanobis dispersion
+    concept_vecs = list(vectors.values())
+    mahal_model = train_mahalanobis_model(concept_vecs)
+    mahal_distances = [compute_mahalanobis_distance(mahal_model, vec) for vec in concept_vecs]
+    avg_mahalanobis = float(np.mean(mahal_distances))
+
     # Format the result
     return (
         f"Graph nodes: {G.number_of_nodes()}\n"
         f"Graph edges: {G.number_of_edges()}\n"
         f"Average semantic coherence (cosine): {avg_similarity:.3f}\n"
+        f"Average semantic dispersion (Mahalanobis): {avg_mahalanobis:.3f}\n"
         f"Concepts: {concepts}\n"
     )
-
