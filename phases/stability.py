@@ -1,5 +1,6 @@
 # phases/stability.py
 
+import os
 import networkx as nx
 import numpy as np
 import spacy
@@ -15,8 +16,16 @@ tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 model = AutoModel.from_pretrained("bert-base-uncased")
 model.eval()
 
-# Load reference cloud of valid concept vectors (precomputed from known-meaningful sentences)
-REFERENCE_VECTORS = np.load("baseline_vectors.npy")
+# === 🔧 Configurable path for baseline ===
+BASELINE_PATH = "data/baseline_vectors.npy"
+
+# === 📥 Lazy-load + patch Mahalanobis model ===
+if not os.path.exists(BASELINE_PATH):
+    raise FileNotFoundError(
+        f"Missing baseline vector file at {BASELINE_PATH}. Run `build_baseline.py` first."
+    )
+
+REFERENCE_VECTORS = np.load(BASELINE_PATH)
 REFERENCE_MAHAL_MODEL = train_mahalanobis_model(REFERENCE_VECTORS)
 
 
