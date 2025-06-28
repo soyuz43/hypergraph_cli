@@ -91,26 +91,33 @@ def analyze_stability(proposition: str) -> str:
     ]
     avg_internal_cosine = float(np.mean(internal_similarities))
 
-    concept_vecs = list(vectors.values())
+    # Per-concept Mahalanobis and contrastive cosine
+    mahal_scores = {
+        concept: compute_mahalanobis_distance(REFERENCE_MAHAL_MODEL, vec)
+        for concept, vec in vectors.items()
+    }
+    contrastive_scores = {
+        concept: float(np.mean([cosine_similarity(vec, ref) for ref in REFERENCE_VECTORS]))
+        for concept, vec in vectors.items()
+    }
 
-    # Contrastive cosine similarity: to reference cloud
-    contrastive_similarities = [
-        cosine_similarity(vec, ref) for vec in concept_vecs for ref in REFERENCE_VECTORS
+    avg_mahalanobis = float(np.mean(list(mahal_scores.values())))
+    avg_contrastive_cosine = float(np.mean(list(contrastive_scores.values())))
+
+    lines = [
+        f"Graph nodes: {G.number_of_nodes()}",
+        f"Graph edges: {G.number_of_edges()}",
+        f"Average internal coherence (cosine): {avg_internal_cosine:.3f}",
+        f"Average contrast-to-baseline (cosine): {avg_contrastive_cosine:.3f}",
+        f"Average Mahalanobis dispersion (vs. baseline): {avg_mahalanobis:.3f}",
+        f"Concepts: {concepts}",
+        "",
+        "Detailed concept-level Mahalanobis and cosine similarity scores relative to baseline:",
     ]
-    avg_contrastive_cosine = float(np.mean(contrastive_similarities))
 
-    # Mahalanobis: to baseline cloud, not self!
-    mahal_distances = [
-        compute_mahalanobis_distance(REFERENCE_MAHAL_MODEL, vec)
-        for vec in concept_vecs
-    ]
-    avg_mahalanobis = float(np.mean(mahal_distances))
+    for concept in concepts:
+        maha = mahal_scores.get(concept, 0.0)
+        contrast = contrastive_scores.get(concept, 0.0)
+        lines.append(f"  {concept:15} | Mahalanobis: {maha:.3f} | Contrast Cosine: {contrast:.3f}")
 
-    return (
-        f"Graph nodes: {G.number_of_nodes()}\n"
-        f"Graph edges: {G.number_of_edges()}\n"
-        f"Average internal coherence (cosine): {avg_internal_cosine:.3f}\n"
-        f"Average contrast-to-baseline (cosine): {avg_contrastive_cosine:.3f}\n"
-        f"Average Mahalanobis dispersion (vs. baseline): {avg_mahalanobis:.3f}\n"
-        f"Concepts: {concepts}\n"
-    )
+    return "\n".join(lines)
