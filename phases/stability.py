@@ -1,5 +1,6 @@
 # phases/stability.py
 
+import os
 import networkx as nx
 import numpy as np
 import spacy
@@ -15,8 +16,16 @@ tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 model = AutoModel.from_pretrained("bert-base-uncased")
 model.eval()
 
-# Load reference cloud of valid concept vectors (precomputed from known-meaningful sentences)
-REFERENCE_VECTORS = np.load("baseline_vectors.npy")
+# === 🔧 Configurable path for baseline ===
+BASELINE_PATH = "data/baseline_vectors.npy"
+
+# === 📥 Lazy-load + patch Mahalanobis model ===
+if not os.path.exists(BASELINE_PATH):
+    raise FileNotFoundError(
+        f"Missing baseline vector file at {BASELINE_PATH}. Run `build_baseline.py` first."
+    )
+
+REFERENCE_VECTORS = np.load(BASELINE_PATH)
 REFERENCE_MAHAL_MODEL = train_mahalanobis_model(REFERENCE_VECTORS)
 
 
@@ -82,26 +91,33 @@ def analyze_stability(proposition: str) -> str:
     ]
     avg_internal_cosine = float(np.mean(internal_similarities))
 
-    concept_vecs = list(vectors.values())
+    # Per-concept Mahalanobis and contrastive cosine
+    mahal_scores = {
+        concept: compute_mahalanobis_distance(REFERENCE_MAHAL_MODEL, vec)
+        for concept, vec in vectors.items()
+    }
+    contrastive_scores = {
+        concept: float(np.mean([cosine_similarity(vec, ref) for ref in REFERENCE_VECTORS]))
+        for concept, vec in vectors.items()
+    }
 
-    # Contrastive cosine similarity: to reference cloud
-    contrastive_similarities = [
-        cosine_similarity(vec, ref) for vec in concept_vecs for ref in REFERENCE_VECTORS
+    avg_mahalanobis = float(np.mean(list(mahal_scores.values())))
+    avg_contrastive_cosine = float(np.mean(list(contrastive_scores.values())))
+
+    lines = [
+        f"Graph nodes: {G.number_of_nodes()}",
+        f"Graph edges: {G.number_of_edges()}",
+        f"Average internal coherence (cosine): {avg_internal_cosine:.3f}",
+        f"Average contrast-to-baseline (cosine): {avg_contrastive_cosine:.3f}",
+        f"Average Mahalanobis dispersion (vs. baseline): {avg_mahalanobis:.3f}",
+        f"Concepts: {concepts}",
+        "",
+        "Detailed concept-level Mahalanobis and cosine similarity scores relative to baseline:",
     ]
-    avg_contrastive_cosine = float(np.mean(contrastive_similarities))
 
-    # Mahalanobis: to baseline cloud, not self!
-    mahal_distances = [
-        compute_mahalanobis_distance(REFERENCE_MAHAL_MODEL, vec)
-        for vec in concept_vecs
-    ]
-    avg_mahalanobis = float(np.mean(mahal_distances))
+    for concept in concepts:
+        maha = mahal_scores.get(concept, 0.0)
+        contrast = contrastive_scores.get(concept, 0.0)
+        lines.append(f"  {concept:15} | Mahalanobis: {maha:.3f} | Contrast Cosine: {contrast:.3f}")
 
-    return (
-        f"Graph nodes: {G.number_of_nodes()}\n"
-        f"Graph edges: {G.number_of_edges()}\n"
-        f"Average internal coherence (cosine): {avg_internal_cosine:.3f}\n"
-        f"Average contrast-to-baseline (cosine): {avg_contrastive_cosine:.3f}\n"
-        f"Average Mahalanobis dispersion (vs. baseline): {avg_mahalanobis:.3f}\n"
-        f"Concepts: {concepts}\n"
-    )
+    return "\n".join(lines)
